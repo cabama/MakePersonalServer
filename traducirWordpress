@@ -1,0 +1,40 @@
+#!/bin/bash 
+
+     #El segundo argumento son los privilegios que le vamos a dar a la carpeta languages
+     if [ -n "$2" ]; then
+          PERMISO=$2
+          echo "Se establecera los permisos: "$PERMISO
+     else 
+          PERMISO='755'
+          echo "No se han establecido permisos, por tanto seran los de por defecto: "$PERMISO
+     fi
+
+
+
+     # El primer argumento $1 es la direccion del wordpress
+     Pathwp -> es la ruta donde se encuentra el archivo de wordpress de donde
+     sacarmos la version
+     PATHWP=$1"/wp-includes/version.php"
+     version=$(grep '^\$wp_version' "$PATHWP" | cut -d "'" -f 2)
+     echo 'La version de Wordpress que tienes instalada es: '$version
+
+     #Ahora vamos a descargar el paquete de idiomas
+     if [ -d "es_ES.zip" ]; then rm es_ES.zip; fi 
+     wget https://downloads.wordpress.org/translation/core/$version/es_ES.zip
+     apt-get install unzip
+     unzip es_ES.zip -d $1/wp-content/languages
+     chmod -R $PERMISO $1/wp-content/languages
+     rm es_ES.zip 
+     
+     #Ahora tenemos que cambiar el wp-config para ponerlo en español
+     echo "#Ponemos Wordpress en Spanish">>$1/wp-config.php
+     echo "define ('WPLANG', 'es_ES');">>$1/wp-config.php
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,102 @@
+#! /bin/bash
+# Created by Carlos Barreiro Mata - barreymata@gmail.com
+# This Script transform your GNU/Linux in a Server.
+# Will be installed and configurate Apache, Php, vsftp ...
+# If you like could install Wordpress and translated to Spanish.
+
+echo "Actualizamos los repositorios"
+#apt-get update
+
+echo "instalamos Apache"
+apt-get install -y apache2 apache2-mpm-prefork libapache2-mod-perl2
+clear
+
+echo "instalamos MySQL"
+apt-get install -y mysql-server-5.6 phpmyadmin libapache2-mod-auth-mysql
+mysql_install_db
+echo "Desea lanzar el Script para la configuración de seguridad de MySQL (y/n)"
+read securesql
+
+if [ "$securesql" = 'y' ];
+then
+	mysql_secure_installation
+fi
+clear
+
+
+echo "Instalamos PHP"
+apt-get install -y php5 php5-mysql php5-gd php5-mysql
+clear
+
+
+echo "Instalamos ssh"
+apt-get install -y ssh
+
+
+# Configuramos Apache
+# Hacemos copia de seguridad, añadimos una linea y recargamos
+echo "configuramos apache"
+cp /etc/apache2/apache2.conf /etc/apache2/apache2_backUp.conf
+echo 'AddType application/x-httpd-php .html' >>/etc/apache2/apache2.conf
+/etc/init.d/apache2 restart
+clear
+
+
+#Configuramos FTP
+echo "Desea Instalar y configurar un servidor FTP? (y/n)"
+read ftpy
+
+if ([ "$ftpy" = "y" ])
+then
+     
+
+
+	#Instalamos y configuramos vsFTPd
+	apt-get install vsftpd filezilla
+	cp /etc/vsftpd.conf /etc/vsftpd_backUP.conf
+	cp vsftpd.conf /etc/vsftpd.conf
+     #Permitimos que los usuarios puedan ejecutar PHP
+     cp /etc/apache2/mods-enabled/php5.conf /etc/apache2/mods-enabled/php5_backUP.conf
+     cp php5.conf /etc/apache2/mods-enabled
+     #Creamos el fichero vsftpd.chroot_list
+	echo >> /etc/vsftpd.chroot_list
+     #Quitamos la virguilla
+     cp httpd.conf /etc/apache2/
+     echo "Include /etc/apache2/httpd.conf" >> /etc/apache2/apache2.conf
+
+	echo "bin/false" >> /etc/shells
+	ln -s /etc/apache2/mods-available/userdir.conf /etc/apache2/mods-enabled
+	ln -s /etc/apache2/mods-available/userdir.load /etc/apache2/mods-enabled
+	
+     #Reinicimos Servicios
+     /etc/init.d/./apache2 restart
+	/etc/init.d/./vsftpd restart
+
+	#Pedimos si se desea añadir un usuario ftp ahora msmo
+	echo "Desea añadir ahora un usario FTP? (y/n)"
+	echo "Si luego "
+	read yesFTP
+	if [ "$yesFTP" = "y" ]
+     then
+		./vsftpd_AddUser
+	fi
+	clear
+
+fi
+
+
+#Instalamos Wordpress
+echo "Descargamos Wordpress"
+echo "Desea instalar wordpress? (y/n)"
+read respuestaWord
+
+if [ "$respuestaWord" = "y" ]
+then
+	./instalarWordpress
+fi
+
+
+
+
+
+

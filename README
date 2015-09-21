@@ -1,0 +1,10 @@
+Created by Carlos Barreiro barreymata@gmail.com
+
+1) Add permision to script -> sudo chmod 777 instalarServidorBasico
+2) Launch the script whith sudo -> sudo ./instalarServidorBasico
+3) Enjoy
+
+Optional 1:
+If you want add another FTP user
+sudo chmod 777 vsftpd_AddUser
+sudo ./vsftpd_AddUser

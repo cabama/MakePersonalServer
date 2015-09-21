@@ -1,0 +1,16 @@
+#! /bin/bash
+# Created by barreymata@gmail.com
+# Este Script sirve para añadir usuarios FTP
+# This Script add FTP User, whith apache avaible in /home/USER/public_html
+
+read -p "Nombre de usuario, que se desea agregar:\n" USER
+
+#Damos de alta el usuario en el servidor.
+useradd -d /home/$USER -s /bin/false $USER
+
+# Creamos el directorio y el subdirectorio public_html;
+# le asociamos el directorio y una contraseña de usuario.
+mkdir /home/$USER
+mkdir /home/$USER/public_html
+chown -R $USER /home/$USER
+passwd $USER

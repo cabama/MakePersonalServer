@@ -1,0 +1,22 @@
+<perl>
+
+opendir H, '/home/';
+
+my @dir = readdir(H);
+
+closedir H;
+
+foreach my $u (@dir) {
+
+next if $u =~ m/^\./;
+
+if (-e "/home/$u/public_html"){
+
+push @Alias, ["/$u", "/home/$u/public_html/"];
+
+}
+
+}
+
+</perl>
+
